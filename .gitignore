@@ -1,44 +1,44 @@
-```
 # Dependencies
 node_modules/
 
-# Build artifacts
+# Build outputs
 dist/
 build/
-*.bundle.js
-*.bundle.css
+coverage/
+htmlcov/
 
-# Development files
-.vite/
-
-# Environment variables
+# Environment
 .env
 .env.local
 .env.*
-
-# Logs
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Coverage
-coverage/
-.htmlcov/
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.pytest_cache/
-.mypy_cache/
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
 
-# Node.js
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Vite/Vue specific
+!.vite/
+.vite/
 
 # IDE
 .vscode/
@@ -46,20 +46,243 @@ yarn-error.log*
 *.swp
 *.swo
 
-# Distribution
-*.tgz
-*.tar.gz
-*.zip
+# Logs
+*.log
 
-# Temporary files
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 *.tmp
-*.temp
 
-# Sensitive files
-config/secrets.*
-credentials.json
+# Testing
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
 
-# Compressed files
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.installed.cfg
+lib/
+lib64/
+parts/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/python*/site-packages/easy-install.pth
+.egg-info/
+.eggs/
+pip-wheel-metadata/
+share/python-wheels/
+wheels/
+*.egg
+
+# Coverage
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Type checking
+*.mypy_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Documentation
+docs/_build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Temporary folders
+tmp/
+temp/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Bower
+bower_components/
+
+# Grunt
+Gruntfile.js
+grunt.js
+
+# Gulp
+gulpfile.js
+
+# Webpack
+webpack.config.js
+
+# Browser-sync
+.browser-sync*
+bs-config.json
+
+# Nuxt.js
+.nuxt
+dist
+
+# Vue.js
+.vuepress/dist
+static/.vuepress
+
+# Angular
+.angular/cache/
+.angular/cli-plugins/
+.angular/config.json
+.angular/internals/
+
+# React
+.next/
+public/next.html
+
+# Svelte
+.svelte-kit/
+.c8/
+
+# Vite
+.vite/
+
+# ESLint
+.eslintcache
+
+# Prettier
+.prettierrc.js
+prettier.config.js
+
+# Jest
+.jest/
+coverage/
+
+# Cypress
+cypress/screenshots/
+cypress/videos/
+
+# Storybook
+storybook-static/
+
+# Netlify
+.netlify/
+
+# Docusaurus
+.docusaurus/
+
+# Remix
+.remix/
+
+# Astro
+.astrowatch
+dist/
+
+# Turborepo
+.turbo/
+
+# Bun
+node_modules/
+bun.lockb
+
+# Deno
+deno.lock
+node_modules/
+
+# TypeScript
+.tsbuildinfo
+dist/
+out/
+out-tsc/
+
+# CoffeeScript
+coffee/
+.coffee_history
+
+# Scala
+lib_managed/
+src_managed/
+target/
+boot.properties
+*~
+*.class
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+*.obj
+*.a
+*.jar
+*.war
+*.ear
 *.zip
 *.gz
 *.tar
@@ -82,5 +305,9 @@ credentials.json
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-
-```
+*.png
+*.jpg
+*.jpeg
+*.bmp
+*.gif
+*.webm
