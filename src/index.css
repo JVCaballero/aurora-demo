@@ -1,0 +1,51 @@
+:root {
+  --primary: #2952A3;
+  --primary-light: #DCE7F7;
+  --accent: #B5651D;
+  --success: #2E7D45;
+  --danger: #C0504D;
+  --ink: #1A2332;
+  --gray: #6B7482;
+  --gray-light: #E3E8EF;
+  --paper: #FAFBFD;
+  --white: #FFFFFF;
+  
+  /* Category colors */
+  --c-plan: #8064A2;
+  --c-design: #C0504D;
+  --c-build: #4BACC6;
+  --c-content: #F79646;
+  --c-test: #1B4F8A;
+  --c-launch: #9BBB59;
+  --c-buffer: #B8BEC7;
+  
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
