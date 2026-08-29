@@ -1,46 +1,49 @@
 /**
- * Security utilities for sanitizing user input and preventing XSS attacks
+ * Sanitizes user input to prevent XSS attacks
+ * @param {string} input - Raw user input
+ * @returns {string} - Sanitized input
  */
-
-/**
- * Sanitizes HTML content to prevent XSS attacks
- * @param {string} html - The HTML string to sanitize
- * @returns {string} - Sanitized HTML string
- */
-export const sanitizeInput = (html) => {
-  if (!html) return '';
+export const sanitizeInput = (input) => {
+  if (!input) return '';
   
-  const temp = document.createElement('div');
-  temp.textContent = html;
-  return temp.innerHTML;
+  const div = document.createElement('div');
+  div.textContent = input;
+  return div.innerHTML;
 };
 
 /**
- * Validates and sanitizes a filename to prevent path traversal and injection attacks
- * @param {string} filename - The original filename
- * @returns {string} - Sanitized filename
+ * Validates and sanitizes URLs
+ * @param {string} url - URL to validate
+ * @returns {string|null} - Validated URL or null if invalid
  */
-export const sanitizeFilename = (filename) => {
-  if (!filename) return 'unnamed';
+export const sanitizeUrl = (url) => {
+  if (!url) return null;
   
-  // Remove path traversal attempts and special characters
-  const sanitized = filename
-    .replace(/[/\\?%*:|"<>]/g, '-')
-    .replace(/\.\./g, '')
-    .trim();
-  
-  // Ensure filename doesn't start with a dot (hidden files)
-  return sanitized.startsWith('.') ? '_' + sanitized : sanitized;
-};
-
-/**
- * Generates a secure random ID
- * @returns {string} - A unique ID
- */
-export const generateSecureId = () => {
-  if (crypto && crypto.randomUUID) {
-    return crypto.randomUUID();
+  try {
+    const parsedUrl = new URL(url);
+    if (['http:', 'https:'].includes(parsedUrl.protocol)) {
+      return parsedUrl.toString();
+    }
+  } catch {
+    // Invalid URL
   }
-  // Fallback for older browsers
-  return 'id-' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+  
+  return null;
+};
+
+/**
+ * Escapes HTML special characters
+ * @param {string} text - Text to escape
+ * @returns {string} - Escaped text
+ */
+export const escapeHtml = (text) => {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  
+  return text.replace(/[&<>"']/g, m => map[m]);
 };

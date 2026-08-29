@@ -1,70 +1,68 @@
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = [
+  // Images
+  'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp',
+  // Documents
+  'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/csv', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  // Archives
+  'application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed',
+  'application/gzip', 'application/x-tar'
+];
+
+const ALLOWED_EXTENSIONS = [
+  'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'pdf', 'doc', 'docx',
+  'xls', 'xlsx', 'csv', 'ppt', 'pptx', 'zip', 'rar', '7z', 'tar', 'gz'
+];
+
 /**
- * File handling utilities for validation and processing
- */
-
-// Allowed file types with their MIME types and extensions
-const ALLOWED_FILE_TYPES = {
-  images: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-  documents: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-  spreadsheets: ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-  archives: ['application/zip', 'application/x-zip-compressed', 'application/x-rar-compressed'],
-  text: ['text/plain', 'text/csv']
-};
-
-// Maximum file size in bytes (5MB)
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-
-/**
- * Validates a file based on type and size
- * @param {File} file - The file to validate
- * @returns {{valid: boolean, error: string|null}} - Validation result
+ * Validates a file for upload
+ * @param {File} file - File to validate
+ * @returns {{valid: boolean, error?: string}} - Validation result
  */
 export const validateFile = (file) => {
   if (!file) {
-    return { valid: false, error: 'No file provided' };
+    return { valid: false, error: 'No file selected' };
   }
 
-  // Check file size
   if (file.size > MAX_FILE_SIZE) {
-    return { 
-      valid: false, 
-      error: `File size exceeds maximum limit of ${formatFileSize(MAX_FILE_SIZE)}` 
-    };
+    return { valid: false, error: 'File size exceeds 5MB limit' };
   }
 
-  // Check file type
-  const mimeType = file.type.toLowerCase();
-  const isAllowed = Object.values(ALLOWED_FILE_TYPES).some(types => 
-    types.includes(mimeType)
-  );
-
-  if (!isAllowed) {
-    return { 
-      valid: false, 
-      error: 'File type not allowed. Please upload images, documents, spreadsheets, archives, or text files.' 
-    };
+  const extension = file.name.split('.').pop().toLowerCase();
+  if (!ALLOWED_EXTENSIONS.includes(extension)) {
+    return { valid: false, error: 'File type not allowed' };
   }
 
-  return { valid: true, error: null };
+  if (!ALLOWED_TYPES.includes(file.type) && file.type !== '') {
+    return { valid: false, error: 'File MIME type not allowed' };
+  }
+
+  return { valid: true };
 };
 
 /**
- * Gets the file type category
- * @param {string} mimeType - The MIME type of the file
- * @returns {string} - The category (image, document, spreadsheet, archive, text, other)
+ * Sanitizes filename to prevent path traversal and other issues
+ * @param {string} filename - Original filename
+ * @returns {string} - Sanitized filename
  */
-export const getFileTypeCategory = (mimeType) => {
-  if (!mimeType) return 'other';
+export const sanitizeFilename = (filename) => {
+  if (!filename) return 'unnamed';
   
-  const type = mimeType.toLowerCase();
+  // Remove path separators and null bytes
+  let sanitized = filename.replace(/[\/\\:\*\?"<>\|]/g, '');
   
-  if (ALLOWED_FILE_TYPES.images.includes(type)) return 'image';
-  if (ALLOWED_FILE_TYPES.documents.includes(type)) return 'document';
-  if (ALLOWED_FILE_TYPES.spreadsheets.includes(type)) return 'spreadsheet';
-  if (ALLOWED_FILE_TYPES.archives.includes(type)) return 'archive';
-  if (ALLOWED_FILE_TYPES.text.includes(type)) return 'text';
+  // Remove leading/trailing spaces and dots
+  sanitized = sanitized.trim().replace(/^\.+/, '');
   
-  return 'other';
+  // Limit length
+  if (sanitized.length > 255) {
+    const ext = sanitized.split('.').pop();
+    sanitized = sanitized.substring(0, 250 - ext.length) + '.' + ext;
+  }
+  
+  return sanitized || 'unnamed';
 };
 
 /**
@@ -80,18 +78,4 @@ export const formatFileSize = (bytes) => {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
-
-/**
- * Converts a file to base64 for storage
- * @param {File} file - The file to convert
- * @returns {Promise<string>} - Base64 string
- */
-export const fileToBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
 };
