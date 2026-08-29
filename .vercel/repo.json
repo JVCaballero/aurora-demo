@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_Ni3Rq6m3MbPqNF89u5lgRG3DA8ro",
+      "name": "aurora-demo",
+      "directory": ".",
+      "orgId": "team_mlJAoHFM2xMPAZ0FoUOTiJzR"
+    }
+  ]
+}
