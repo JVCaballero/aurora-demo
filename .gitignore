@@ -5,4 +5,5 @@
 ### Modified files:
 [utils.py]
 ###current .gitignore Content
-(empty)
+(empty).vercel/
+.env.local
