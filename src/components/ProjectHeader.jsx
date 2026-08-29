@@ -129,7 +129,7 @@ function ProjectHeader({ project }) {
         marginBottom: '30px'
       }}>
         <div style={{
-          background: '#fff',
+          background: 'var(--white)',
           border: '1px solid var(--gray-light)',
           borderRadius: '12px',
           padding: '18px 20px'
@@ -146,7 +146,7 @@ function ProjectHeader({ project }) {
         </div>
 
         <div style={{
-          background: '#fff',
+          background: 'var(--white)',
           border: '1px solid var(--gray-light)',
           borderRadius: '12px',
           padding: '18px 20px'
@@ -163,7 +163,7 @@ function ProjectHeader({ project }) {
         </div>
 
         <div style={{
-          background: '#fff',
+          background: 'var(--white)',
           border: '1px solid var(--gray-light)',
           borderRadius: '12px',
           padding: '18px 20px'
@@ -264,7 +264,7 @@ function ProjectHeader({ project }) {
             <div
               key={category.id}
               style={{
-                background: '#fff',
+                background: 'var(--white)',
                 border: '1px solid var(--gray-light)',
                 borderRadius: '8px',
                 padding: '12px 16px',

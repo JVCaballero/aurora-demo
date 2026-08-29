@@ -21,14 +21,15 @@ function Modal({ isOpen, onClose, title, children, footer }) {
     >
       <div
         style={{
-          background: '#fff',
+          background: 'var(--white)',
           borderRadius: '12px',
           padding: '24px',
           width: '100%',
           maxWidth: '500px',
           maxHeight: '80vh',
           overflow: 'auto',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          color: 'var(--ink)'
         }}
         onClick={e => e.stopPropagation()}
       >
@@ -44,7 +45,8 @@ function Modal({ isOpen, onClose, title, children, footer }) {
               fontSize: '20px', 
               fontWeight: 400,
               fontFamily: 'Anton, sans-serif',
-              letterSpacing: '0.02em'
+              letterSpacing: '0.02em',
+              color: 'var(--ink)'
             }}>
               {title}
             </h3>
