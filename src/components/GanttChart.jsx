@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useProjects } from '../context/ProjectContext';
 import { X, ChevronDown, ChevronRight, Plus, Trash2, Edit2 } from 'lucide-react';
+import Modal from './Modal';
 
 function GanttChart({ project }) {
   const [hiddenCategories, setHiddenCategories] = useState({});
@@ -64,7 +65,7 @@ function GanttChart({ project }) {
   return (
     <div style={{ flex: 1, overflow: 'auto' }}>
       <div style={{ 
-        background: '#fff', 
+        background: 'var(--white)', 
         border: '1px solid var(--gray-light)', 
         borderRadius: '12px', 
         overflow: 'hidden',
@@ -202,36 +203,50 @@ function GanttChart({ project }) {
       </div>
 
       {/* Edit Task Modal */}
-      {editingTask && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }} onClick={closeEditModal}>
-          <div style={{
-            background: '#fff',
-            borderRadius: '12px',
-            padding: '24px',
-            width: '100%',
-            maxWidth: '500px',
-            maxHeight: '80vh',
-            overflow: 'auto'
-          }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Edit Task</h3>
-              <button onClick={closeEditModal} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                <X size={20} color="var(--gray)" />
-              </button>
-            </div>
-            
-            <div style={{ marginBottom: '16px' }}>
+      <Modal
+        isOpen={!!editingTask}
+        onClose={closeEditModal}
+        title="Edit Task"
+        footer={
+          <>
+            <button
+              onClick={handleDeleteTask}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '10px 16px',
+                background: 'var(--danger)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '14px'
+              }}
+            >
+              <Trash2 size={16} />
+              Delete
+            </button>
+            <button
+              onClick={closeEditModal}
+              style={{
+                padding: '10px 20px',
+                background: 'var(--primary)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '14px'
+              }}
+            >
+              Done
+            </button>
+          </>
+        }
+      >
+        {editingTask && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
                 Task Name
               </label>
@@ -249,7 +264,7 @@ function GanttChart({ project }) {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
                   Start Day
@@ -286,7 +301,7 @@ function GanttChart({ project }) {
               </div>
             </div>
 
-            <div style={{ marginBottom: '16px' }}>
+            <div>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
                 Buffer (days)
               </label>
@@ -304,7 +319,7 @@ function GanttChart({ project }) {
               />
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
+            <div>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                 <input
                   type="checkbox"
@@ -315,44 +330,9 @@ function GanttChart({ project }) {
                 <span style={{ fontSize: '14px', fontWeight: 500 }}>Mark as completed</span>
               </label>
             </div>
-
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-              <button
-                onClick={handleDeleteTask}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '10px 16px',
-                  background: 'var(--danger)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  fontSize: '14px'
-                }}
-              >
-                <Trash2 size={16} />
-                Delete
-              </button>
-              <button
-                onClick={closeEditModal}
-                style={{
-                  padding: '10px 20px',
-                  background: 'var(--primary)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  fontSize: '14px'
-                }}
-              >
-                Done
-              </button>
-            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 }
