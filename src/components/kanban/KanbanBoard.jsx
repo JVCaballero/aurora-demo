@@ -1,7 +1,7 @@
-import { useProjects } from '../context/ProjectContext';
+import { useProjects } from '../../context/ProjectContext';
 import { Plus, MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
-import Modal from './Modal';
+import Modal from '../common/Modal';
 
 function KanbanBoard({ project }) {
   const [selectedTask, setSelectedTask] = useState(null);

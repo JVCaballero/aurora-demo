@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useProjects } from '../context/ProjectContext';
+import { useProjects } from '../../context/ProjectContext';
 import { X, ChevronDown, ChevronRight, Plus, Trash2, Edit2 } from 'lucide-react';
-import Modal from './Modal';
+import Modal from '../common/Modal';
 
 function GanttChart({ project }) {
   const [hiddenCategories, setHiddenCategories] = useState({});
