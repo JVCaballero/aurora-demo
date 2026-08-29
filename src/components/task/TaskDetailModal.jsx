@@ -4,12 +4,13 @@ import TaskComments from './TaskComments';
 import TaskAttachments from './TaskAttachments';
 
 const TaskDetailModal = ({ task, onClose, onUpdateTask }) => {
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState('activity');
 
   if (!task) return null;
 
   const tabs = [
     { id: 'details', label: 'Details' },
+    { id: 'activity', label: 'Activity' },
     { id: 'comments', label: 'Comments' },
     { id: 'attachments', label: 'Attachments' }
   ];
@@ -24,6 +25,53 @@ const TaskDetailModal = ({ task, onClose, onUpdateTask }) => {
             <p><strong>Start:</strong> {new Date(task.startDate).toLocaleDateString()}</p>
             <p><strong>End:</strong> {new Date(task.endDate).toLocaleDateString()}</p>
             {task.description && <p>{task.description}</p>}
+          </div>
+        );
+      case 'activity':
+        return (
+          <div className="task-activity">
+            <div className="task-activity__section">
+              <h4>Comments</h4>
+              <TaskComments
+                taskId={task.id}
+                comments={task.comments || []}
+                onAddComment={(tid, comment) => {
+                  const updatedTask = {
+                    ...task,
+                    comments: [...(task.comments || []), comment]
+                  };
+                  onUpdateTask(updatedTask);
+                }}
+                onDeleteComment={(tid, commentId) => {
+                  const updatedTask = {
+                    ...task,
+                    comments: (task.comments || []).filter(c => c.id !== commentId)
+                  };
+                  onUpdateTask(updatedTask);
+                }}
+              />
+            </div>
+            <div className="task-activity__section">
+              <h4>Attachments</h4>
+              <TaskAttachments
+                taskId={task.id}
+                attachments={task.attachments || []}
+                onAddAttachment={(tid, attachment) => {
+                  const updatedTask = {
+                    ...task,
+                    attachments: [...(task.attachments || []), attachment]
+                  };
+                  onUpdateTask(updatedTask);
+                }}
+                onDeleteAttachment={(tid, attachmentId) => {
+                  const updatedTask = {
+                    ...task,
+                    attachments: (task.attachments || []).filter(a => a.id !== attachmentId)
+                  };
+                  onUpdateTask(updatedTask);
+                }}
+              />
+            </div>
           </div>
         );
       case 'comments':
@@ -126,6 +174,17 @@ const TaskDetailModal = ({ task, onClose, onUpdateTask }) => {
         }
         .task-detail-modal__content {
           min-height: 200px;
+        }
+        .task-activity {
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+        .task-activity__section h4 {
+          margin: 0 0 1rem;
+          color: var(--ink);
+          font-size: 1rem;
+          font-weight: 600;
         }
         .task-detail__content h3 {
           margin: 0 0 1rem;

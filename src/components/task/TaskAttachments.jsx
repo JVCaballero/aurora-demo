@@ -6,6 +6,7 @@ import { validateFile, sanitizeFilename } from '../../utils/fileUtils';
 const TaskAttachments = ({ taskId, attachments, onAddAttachment, onDeleteAttachment }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [previewImage, setPreviewImage] = useState(null);
 
   const handleFile = useCallback(async (file) => {
     setUploadError('');
@@ -65,6 +66,25 @@ const TaskAttachments = ({ taskId, attachments, onAddAttachment, onDeleteAttachm
     }
   };
 
+  const handleDownload = (attachment) => {
+    const link = document.createElement('a');
+    link.href = attachment.url;
+    link.download = attachment.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handlePreview = (attachment) => {
+    if (attachment.type.startsWith('image/')) {
+      setPreviewImage(attachment);
+    }
+  };
+
+  const closePreview = () => {
+    setPreviewImage(null);
+  };
+
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -102,22 +122,69 @@ const TaskAttachments = ({ taskId, attachments, onAddAttachment, onDeleteAttachm
         <div className="task-attachments__list">
           {attachments.map((attachment) => (
             <div key={attachment.id} className="task-attachment">
-              <FileIcon filename={attachment.name} size={32} />
+              {attachment.type.startsWith('image/') ? (
+                <div 
+                  className="task-attachment__preview"
+                  onClick={() => handlePreview(attachment)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <img 
+                    src={attachment.url} 
+                    alt={attachment.name}
+                    style={{ 
+                      width: '32px', 
+                      height: '32px', 
+                      objectFit: 'cover', 
+                      borderRadius: '4px' 
+                    }} 
+                  />
+                </div>
+              ) : (
+                <FileIcon filename={attachment.name} size={32} />
+              )}
               <div className="task-attachment__info">
                 <p className="task-attachment__name">{attachment.name}</p>
                 <p className="task-attachment__size">{formatFileSize(attachment.size)}</p>
               </div>
-              <button
-                className="task-attachment__delete"
-                onClick={() => handleDelete(attachment.id)}
-                aria-label="Delete attachment"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
+              <div className="task-attachment__actions">
+                <button
+                  className="task-attachment__action"
+                  onClick={() => handleDownload(attachment)}
+                  aria-label="Download attachment"
+                  title="Download"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                  </svg>
+                </button>
+                <button
+                  className="task-attachment__delete"
+                  onClick={() => handleDelete(attachment.id)}
+                  aria-label="Delete attachment"
+                  title="Delete"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div className="task-attachment__preview-modal" onClick={closePreview}>
+          <div className="task-attachment__preview-content" onClick={(e) => e.stopPropagation()}>
+            <button className="task-attachment__preview-close" onClick={closePreview}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <img src={previewImage.url} alt={previewImage.name} />
+            <p className="task-attachment__preview-name">{previewImage.name}</p>
+          </div>
         </div>
       )}
 
@@ -178,6 +245,11 @@ const TaskAttachments = ({ taskId, attachments, onAddAttachment, onDeleteAttachm
           border-radius: 8px;
           border: 1px solid var(--gray-200);
         }
+        .task-attachment__preview {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
         .task-attachment__info {
           flex: 1;
           min-width: 0;
@@ -196,6 +268,23 @@ const TaskAttachments = ({ taskId, attachments, onAddAttachment, onDeleteAttachm
           font-size: 0.75rem;
           color: var(--gray-500);
         }
+        .task-attachment__actions {
+          display: flex;
+          gap: 0.25rem;
+        }
+        .task-attachment__action {
+          background: none;
+          border: none;
+          color: var(--gray-400);
+          cursor: pointer;
+          padding: 0.5rem;
+          border-radius: 6px;
+          transition: all 0.2s;
+        }
+        .task-attachment__action:hover {
+          color: var(--primary);
+          background: rgba(99, 102, 241, 0.1);
+        }
         .task-attachment__delete {
           background: none;
           border: none;
@@ -209,6 +298,55 @@ const TaskAttachments = ({ taskId, attachments, onAddAttachment, onDeleteAttachm
           color: #ef4444;
           background: rgba(239, 68, 68, 0.1);
         }
+        .task-attachment__preview-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          padding: 2rem;
+        }
+        .task-attachment__preview-content {
+          position: relative;
+          max-width: 90%;
+          max-height: 90%;
+          background: var(--white);
+          border-radius: 12px;
+          padding: 1.5rem;
+          text-align: center;
+        }
+        .task-attachment__preview-close {
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--gray-500);
+          padding: 0.5rem;
+          border-radius: 50%;
+          transition: all 0.2s;
+        }
+        .task-attachment__preview-close:hover {
+          background: var(--gray-100);
+          color: var(--ink);
+        }
+        .task-attachment__preview-content img {
+          max-width: 100%;
+          max-height: 70vh;
+          object-fit: contain;
+          border-radius: 8px;
+        }
+        .task-attachment__preview-name {
+          margin-top: 1rem;
+          font-size: 0.875rem;
+          color: var(--gray-600);
+        }
         [data-theme="dark"] .task-attachments__dropzone {
           border-color: var(--gray-700);
         }
@@ -218,6 +356,12 @@ const TaskAttachments = ({ taskId, attachments, onAddAttachment, onDeleteAttachm
         }
         [data-theme="dark"] .task-attachment__name {
           color: var(--gray-200);
+        }
+        [data-theme="dark"] .task-attachment__preview-content {
+          background: var(--gray-800);
+        }
+        [data-theme="dark"] .task-attachment__preview-name {
+          color: var(--gray-300);
         }
       `}</style>
     </div>
