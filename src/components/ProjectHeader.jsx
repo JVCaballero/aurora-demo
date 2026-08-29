@@ -1,11 +1,20 @@
 import { useProjects } from '../context/ProjectContext';
-import { Calendar, Target, Clock, Plus, ChevronDown, ChevronRight } from 'lucide-react';
+import { Calendar, Target, Clock, Plus, ChevronDown, ChevronRight, X } from 'lucide-react';
 import { useState } from 'react';
+import Modal from './Modal';
 
 function ProjectHeader({ project }) {
   const [editingTask, setEditingTask] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [showAddCategory, setShowAddCategory] = useState(false);
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [newTaskData, setNewTaskData] = useState({
+    name: '',
+    startDay: 0,
+    duration: 5,
+    buffer: 0
+  });
   const { addCategory, addTask } = useProjects();
 
   if (!project) return null;
@@ -40,21 +49,46 @@ function ProjectHeader({ project }) {
     }
   }
 
-  function handleQuickAddTask(categoryId) {
-    const taskName = prompt('Enter task name:');
-    if (taskName) {
-      const duration = parseInt(prompt('Duration (days):', '5')) || 5;
-      const startDay = parseInt(prompt('Start day:', '0')) || 0;
-      const buffer = parseInt(prompt('Buffer days (optional):', '0')) || 0;
-      
-      addTask(project.id, categoryId, {
-        name: taskName,
-        startDay,
-        duration,
-        buffer,
+  function handleOpenAddTask(categoryId) {
+    setSelectedCategoryId(categoryId);
+    setNewTaskData({
+      name: '',
+      startDay: 0,
+      duration: 5,
+      buffer: 0
+    });
+    setShowAddTask(true);
+  }
+
+  function handleAddTask() {
+    if (newTaskData.name.trim() && selectedCategoryId) {
+      addTask(project.id, selectedCategoryId, {
+        name: newTaskData.name.trim(),
+        startDay: parseInt(newTaskData.startDay) || 0,
+        duration: parseInt(newTaskData.duration) || 5,
+        buffer: parseInt(newTaskData.buffer) || 0,
         completed: false
       });
+      setNewTaskData({
+        name: '',
+        startDay: 0,
+        duration: 5,
+        buffer: 0
+      });
+      setShowAddTask(false);
+      setSelectedCategoryId(null);
     }
+  }
+
+  function handleCloseAddTask() {
+    setShowAddTask(false);
+    setSelectedCategoryId(null);
+    setNewTaskData({
+      name: '',
+      startDay: 0,
+      duration: 5,
+      buffer: 0
+    });
   }
 
   return (
@@ -72,9 +106,10 @@ function ProjectHeader({ project }) {
           PROJECT
         </div>
         <h1 style={{
-          fontFamily: 'Archivo, sans-serif',
+          fontFamily: 'Anton, sans-serif',
           fontSize: 'clamp(30px, 5vw, 46px)',
-          fontWeight: 800,
+          fontWeight: 400,
+          letterSpacing: '0.02em',
           lineHeight: 1.05,
           marginBottom: '14px',
           color: 'var(--ink)'
@@ -102,7 +137,7 @@ function ProjectHeader({ project }) {
           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--gray)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
             Progress
           </div>
-          <div style={{ fontFamily: 'Archivo, sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 800, color: 'var(--primary)' }}>
+          <div style={{ fontFamily: 'Anton, sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 400, letterSpacing: '0.02em', color: 'var(--primary)' }}>
             {progressPercent}%
           </div>
           <div style={{ marginTop: '8px', height: '6px', background: 'var(--gray-light)', borderRadius: '3px', overflow: 'hidden' }}>
@@ -119,7 +154,7 @@ function ProjectHeader({ project }) {
           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--gray)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
             Timeline
           </div>
-          <div style={{ fontFamily: 'Archivo, sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 800, color: 'var(--primary)' }}>
+          <div style={{ fontFamily: 'Anton, sans-serif', fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 400, letterSpacing: '0.02em', color: 'var(--primary)' }}>
             ~{weeksRemaining} wks
           </div>
           <div style={{ fontSize: '12px', color: 'var(--gray)', marginTop: '4px' }}>
@@ -136,7 +171,7 @@ function ProjectHeader({ project }) {
           <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--gray)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>
             Start Date
           </div>
-          <div style={{ fontFamily: 'Archivo, sans-serif', fontSize: 'clamp(24px, 3vw, 34px)', fontWeight: 800, color: 'var(--primary)' }}>
+          <div style={{ fontFamily: 'Anton, sans-serif', fontSize: 'clamp(24px, 3vw, 34px)', fontWeight: 400, letterSpacing: '0.02em', color: 'var(--primary)' }}>
             {new Date(project.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </div>
           <div style={{ fontSize: '12px', color: 'var(--gray)', marginTop: '4px' }}>
@@ -252,7 +287,7 @@ function ProjectHeader({ project }) {
                 {category.tasks.length} tasks
               </span>
               <button
-                onClick={() => handleQuickAddTask(category.id)}
+                onClick={() => handleOpenAddTask(category.id)}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -269,6 +304,123 @@ function ProjectHeader({ project }) {
           ))}
         </div>
       </div>
+
+      {/* Add Task Modal */}
+      <Modal
+        isOpen={showAddTask}
+        onClose={handleCloseAddTask}
+        title="Add New Task"
+        footer={
+          <>
+            <button
+              onClick={handleCloseAddTask}
+              style={{
+                padding: '10px 16px',
+                background: 'transparent',
+                color: 'var(--gray)',
+                border: '1px solid var(--gray-light)',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '14px'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleAddTask}
+              style={{
+                padding: '10px 20px',
+                background: 'var(--primary)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '14px'
+              }}
+            >
+              Add Task
+            </button>
+          </>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
+              Task Name *
+            </label>
+            <input
+              type="text"
+              value={newTaskData.name}
+              onChange={(e) => setNewTaskData({ ...newTaskData, name: e.target.value })}
+              placeholder="Enter task name"
+              autoFocus
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                border: '1px solid var(--gray-light)',
+                borderRadius: '6px',
+                fontSize: '14px'
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
+                Start Day
+              </label>
+              <input
+                type="number"
+                value={newTaskData.startDay}
+                onChange={(e) => setNewTaskData({ ...newTaskData, startDay: parseInt(e.target.value) || 0 })}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: '1px solid var(--gray-light)',
+                  borderRadius: '6px',
+                  fontSize: '14px'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
+                Duration (days)
+              </label>
+              <input
+                type="number"
+                value={newTaskData.duration}
+                onChange={(e) => setNewTaskData({ ...newTaskData, duration: parseInt(e.target.value) || 5 })}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: '1px solid var(--gray-light)',
+                  borderRadius: '6px',
+                  fontSize: '14px'
+                }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
+              Buffer (days)
+            </label>
+            <input
+              type="number"
+              value={newTaskData.buffer}
+              onChange={(e) => setNewTaskData({ ...newTaskData, buffer: parseInt(e.target.value) || 0 })}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                border: '1px solid var(--gray-light)',
+                borderRadius: '6px',
+                fontSize: '14px'
+              }}
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
