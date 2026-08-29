@@ -78,3 +78,4 @@ Thumbs.db
 ###current .gitignore Content
 (empty).vercel/
 .env.local
+dist/
