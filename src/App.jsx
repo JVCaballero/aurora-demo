@@ -1,8 +1,8 @@
 import { ProjectProvider, useProjects } from './context/ProjectContext';
-import Sidebar from './components/Sidebar';
-import ProjectHeader from './components/ProjectHeader';
-import GanttChart from './components/GanttChart';
-import KanbanBoard from './components/KanbanBoard';
+import Sidebar from './components/layout/Sidebar';
+import ProjectHeader from './components/project/ProjectHeader';
+import GanttChart from './components/gantt/GanttChart';
+import KanbanBoard from './components/kanban/KanbanBoard';
 import { useState } from 'react';
 import { Calendar, LayoutGrid, BarChart3 } from 'lucide-react';
 

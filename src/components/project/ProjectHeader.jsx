@@ -1,7 +1,7 @@
-import { useProjects } from '../context/ProjectContext';
+import { useProjects } from '../../context/ProjectContext';
 import { Calendar, Target, Clock, Plus, ChevronDown, ChevronRight, X } from 'lucide-react';
 import { useState } from 'react';
-import Modal from './Modal';
+import Modal from '../common/Modal';
 
 function ProjectHeader({ project }) {
   const [editingTask, setEditingTask] = useState(null);

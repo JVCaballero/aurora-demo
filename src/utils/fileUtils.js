@@ -79,3 +79,17 @@ export const formatFileSize = (bytes) => {
   
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
+
+export const getFileTypeCategory = (mimeType) => {
+  if (!mimeType) return 'other';
+  
+  const type = mimeType.toLowerCase();
+  
+  if (type.startsWith('image/')) return 'image';
+  if (type.includes('pdf') || type.includes('msword') || type.includes('document')) return 'document';
+  if (type.includes('excel') || type.includes('spreadsheet')) return 'spreadsheet';
+  if (type.includes('zip') || type.includes('rar') || type.includes('archive')) return 'archive';
+  if (type.startsWith('text/')) return 'text';
+  
+  return 'other';
+};
