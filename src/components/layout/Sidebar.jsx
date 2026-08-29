@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useProjects } from '../context/ProjectContext';
+import { useProjects } from '../../context/ProjectContext';
 import { FolderPlus, Trash2, CheckCircle, Clock, Archive, Moon, Sun } from 'lucide-react';
-import Modal from './Modal';
+import Modal from '../common/Modal';
 
 function Sidebar() {
   const { projects, selectedProjectId, setSelectedProjectId, addProject, deleteProject } = useProjects();
