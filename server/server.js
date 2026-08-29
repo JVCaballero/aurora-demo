@@ -8,6 +8,8 @@ import { Pool } from 'pg';
 import projectRoutes from './routes/projects.js';
 import taskRoutes from './routes/tasks.js';
 import reportRoutes from './routes/reports.js';
+import commentRoutes from './routes/comments.js';
+import attachmentRoutes from './routes/attachments.js';
 
 dotenv.config();
 
@@ -40,6 +42,8 @@ app.use(express.json());
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/attachments', attachmentRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -169,6 +173,7 @@ export async function initializeDatabase() {
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
         user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        parent_id UUID REFERENCES comments(id) ON DELETE CASCADE,
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
