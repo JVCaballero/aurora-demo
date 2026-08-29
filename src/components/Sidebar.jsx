@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useProjects } from '../context/ProjectContext';
-import { FolderPlus, Trash2, Edit2, CheckCircle, Clock, Archive, X } from 'lucide-react';
+import { FolderPlus, Trash2, CheckCircle, Clock, Archive, Moon, Sun } from 'lucide-react';
 import Modal from './Modal';
 
 function Sidebar() {
@@ -10,6 +10,20 @@ function Sidebar() {
   const [newProjectDescription, setNewProjectDescription] = useState('');
   const [newProjectStartDate, setNewProjectStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [newProjectColor, setNewProjectColor] = useState('#2952A3');
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('aurora-theme');
+    return saved === 'dark';
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('aurora-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('aurora-theme', 'light');
+    }
+  }, [isDarkMode]);
 
   function handleAddProject() {
     if (newProjectName.trim()) {
@@ -38,7 +52,7 @@ function Sidebar() {
   return (
     <div style={{
       width: '280px',
-      background: '#fff',
+      background: 'var(--white)',
       borderRight: '1px solid var(--gray-light)',
       display: 'flex',
       flexDirection: 'column',
@@ -49,16 +63,35 @@ function Sidebar() {
         padding: '24px 20px',
         borderBottom: '1px solid var(--gray-light)'
       }}>
-        <h1 style={{
-          fontFamily: 'Anton, sans-serif',
-          fontSize: '24px',
-          fontWeight: 400,
-          letterSpacing: '0.02em',
-          color: 'var(--primary)',
-          marginBottom: '4px'
-        }}>
-          Aurora
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <h1 style={{
+            fontFamily: 'Anton, sans-serif',
+            fontSize: '24px',
+            fontWeight: 400,
+            letterSpacing: '0.02em',
+            color: 'var(--primary)',
+            marginBottom: '0'
+          }}>
+            Aurora
+          </h1>
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--gray)',
+              padding: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '6px'
+            }}
+            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+        </div>
         <p style={{ fontSize: '13px', color: 'var(--gray)' }}>Project Management</p>
       </div>
 
@@ -173,7 +206,7 @@ function Sidebar() {
               <button
                 onClick={(e) => handleDeleteProject(e, project.id)}
                 style={{
-                  background: 'none',
+                  background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
                   color: 'var(--gray)',

@@ -26,6 +26,28 @@
   background: var(--paper);
 }
 
+/* Dark mode variables */
+[data-theme="dark"] {
+  --primary: #5B8FE8;
+  --primary-light: #1A2F4D;
+  --accent: #E58A3F;
+  --success: #4CAF80;
+  --danger: #E57373;
+  --ink: #E8EDF2;
+  --gray: #9AA3B0;
+  --gray-light: #2D3748;
+  --paper: #121826;
+  --white: #1E293B;
+  
+  --c-plan: #9B7FBF;
+  --c-design: #D6706D;
+  --c-build: #6BC0D6;
+  --c-content: #FAB066;
+  --c-test: #4D7FBF;
+  --c-launch: #B0CD79;
+  --c-buffer: #6B7482;
+}
+
 /* Headings use Anton font */
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Anton', sans-serif;
