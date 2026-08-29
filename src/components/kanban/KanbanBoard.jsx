@@ -1,8 +1,12 @@
 import { useProjects } from '../../context/ProjectContext';
-import { Plus, MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
-import Modal from '../common/Modal';
+import TaskDetailModal from '../task/TaskDetailModal';
 
+/**
+ * KanbanBoard - Displays tasks in a Kanban-style board
+ * @param {Object} project - The current project
+ * @returns {JSX.Element}
+ */
 function KanbanBoard({ project }) {
   const [selectedTask, setSelectedTask] = useState(null);
   const { updateTask } = useProjects();
@@ -16,7 +20,12 @@ function KanbanBoard({ project }) {
 
   project.categories.forEach(category => {
     category.tasks.forEach(task => {
-      const taskWithCategory = { ...task, categoryName: category.name, categoryColor: category.color };
+      const taskWithCategory = { 
+        ...task, 
+        categoryName: category.name, 
+        categoryColor: category.color,
+        categoryId: category.id
+      };
       if (task.completed) {
         doneTasks.push(taskWithCategory);
       } else if (task.startDay <= getCurrentDay()) {
@@ -32,18 +41,18 @@ function KanbanBoard({ project }) {
     return 15;
   }
 
-  function handleTaskClick(task, categoryId) {
-    setSelectedTask({ task, categoryId });
+  function handleTaskClick(task) {
+    setSelectedTask(task);
   }
 
   function handleCloseModal() {
     setSelectedTask(null);
   }
 
-  function handleStatusChange(completed) {
-    if (selectedTask) {
-      updateTask(project.id, selectedTask.categoryId, selectedTask.task.id, { completed });
-      handleCloseModal();
+  function handleSaveTask(updatedTask) {
+    if (updatedTask && selectedTask?.categoryId) {
+      updateTask(project.id, selectedTask.categoryId, updatedTask);
+      setSelectedTask(updatedTask);
     }
   }
 
@@ -171,144 +180,12 @@ function KanbanBoard({ project }) {
       </div>
 
       {/* Task Detail Modal */}
-      <Modal
+      <TaskDetailModal
+        task={selectedTask}
         isOpen={!!selectedTask}
         onClose={handleCloseModal}
-        title="Task Details"
-        footer={
-          <>
-            {!selectedTask?.task.completed && (
-              <button
-                onClick={() => handleStatusChange(true)}
-                style={{
-                  padding: '10px 16px',
-                  background: 'var(--success)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  fontSize: '14px'
-                }}
-              >
-                Mark Complete
-              </button>
-            )}
-            {selectedTask?.task.completed && (
-              <button
-                onClick={() => handleStatusChange(false)}
-                style={{
-                  padding: '10px 16px',
-                  background: 'var(--accent)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  fontSize: '14px'
-                }}
-              >
-                Reopen
-              </button>
-            )}
-            <button
-              onClick={handleCloseModal}
-              style={{
-                padding: '10px 20px',
-                background: 'transparent',
-                color: 'var(--gray)',
-                border: '1px solid var(--gray-light)',
-                borderRadius: '6px',
-                fontWeight: 600,
-                fontSize: '14px'
-              }}
-            >
-              Close
-            </button>
-          </>
-        }
-      >
-        {selectedTask && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div>
-              <div style={{
-                fontSize: '11px',
-                fontWeight: 600,
-                color: selectedTask.task.categoryColor,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                marginBottom: '6px'
-              }}>
-                {selectedTask.task.categoryName}
-              </div>
-              <h3 style={{
-                fontFamily: 'Anton, sans-serif',
-                fontSize: '20px',
-                fontWeight: 400,
-                color: 'var(--ink)',
-                marginBottom: '12px'
-              }}>
-                {selectedTask.task.name}
-              </h3>
-            </div>
-
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '16px',
-              padding: '16px',
-              background: 'var(--paper)',
-              borderRadius: '8px'
-            }}>
-              <div>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--gray)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  Start Day
-                </div>
-                <div style={{ fontFamily: 'Anton, sans-serif', fontSize: '24px', color: 'var(--primary)' }}>
-                  {selectedTask.task.startDay}
-                </div>
-              </div>
-              <div>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--gray)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  Duration
-                </div>
-                <div style={{ fontFamily: 'Anton, sans-serif', fontSize: '24px', color: 'var(--primary)' }}>
-                  {selectedTask.task.duration} days
-                </div>
-              </div>
-              {selectedTask.task.buffer > 0 && (
-                <div>
-                  <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--gray)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                    Buffer
-                  </div>
-                  <div style={{ fontFamily: 'Anton, sans-serif', fontSize: '24px', color: 'var(--c-buffer)' }}>
-                    +{selectedTask.task.buffer} days
-                  </div>
-                </div>
-              )}
-              <div>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--gray)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                  Status
-                </div>
-                <div style={{
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  color: selectedTask.task.completed ? 'var(--success)' : 'var(--accent)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}>
-                  <div style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: selectedTask.task.completed ? 'var(--success)' : 'var(--accent)'
-                  }}></div>
-                  {selectedTask.task.completed ? 'Completed' : 'In Progress'}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </Modal>
+        onSave={handleSaveTask}
+      />
     </div>
   );
 }
