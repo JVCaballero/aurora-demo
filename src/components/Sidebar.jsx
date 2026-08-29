@@ -1,19 +1,30 @@
+import { useState } from 'react';
 import { useProjects } from '../context/ProjectContext';
-import { FolderPlus, Trash2, Edit2, CheckCircle, Clock, Archive } from 'lucide-react';
+import { FolderPlus, Trash2, Edit2, CheckCircle, Clock, Archive, X } from 'lucide-react';
+import Modal from './Modal';
 
 function Sidebar() {
   const { projects, selectedProjectId, setSelectedProjectId, addProject, deleteProject } = useProjects();
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectDescription, setNewProjectDescription] = useState('');
+  const [newProjectStartDate, setNewProjectStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [newProjectColor, setNewProjectColor] = useState('#2952A3');
 
   function handleAddProject() {
-    const name = prompt('Enter project name:');
-    if (name) {
+    if (newProjectName.trim()) {
       addProject({
-        name,
-        description: '',
-        startDate: new Date().toISOString().split('T')[0],
+        name: newProjectName.trim(),
+        description: newProjectDescription,
+        startDate: newProjectStartDate,
         status: 'active',
-        color: '#2952A3'
+        color: newProjectColor
       });
+      setNewProjectName('');
+      setNewProjectDescription('');
+      setNewProjectStartDate(new Date().toISOString().split('T')[0]);
+      setNewProjectColor('#2952A3');
+      setShowAddModal(false);
     }
   }
 
@@ -39,9 +50,10 @@ function Sidebar() {
         borderBottom: '1px solid var(--gray-light)'
       }}>
         <h1 style={{
-          fontFamily: 'Archivo, sans-serif',
+          fontFamily: 'Anton, sans-serif',
           fontSize: '24px',
-          fontWeight: 800,
+          fontWeight: 400,
+          letterSpacing: '0.02em',
           color: 'var(--primary)',
           marginBottom: '4px'
         }}>
@@ -62,7 +74,7 @@ function Sidebar() {
             Projects
           </h2>
           <button
-            onClick={handleAddProject}
+            onClick={() => setShowAddModal(true)}
             style={{
               background: 'none',
               border: 'none',
@@ -186,6 +198,140 @@ function Sidebar() {
         <p>Aurora v1.0</p>
         <p style={{ marginTop: '4px' }}>© 2024</p>
       </div>
+
+      {/* Add Project Modal */}
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => {
+          setShowAddModal(false);
+          setNewProjectName('');
+          setNewProjectDescription('');
+          setNewProjectStartDate(new Date().toISOString().split('T')[0]);
+          setNewProjectColor('#2952A3');
+        }}
+        title="Create New Project"
+        footer={
+          <>
+            <button
+              onClick={() => {
+                setShowAddModal(false);
+                setNewProjectName('');
+                setNewProjectDescription('');
+                setNewProjectStartDate(new Date().toISOString().split('T')[0]);
+                setNewProjectColor('#2952A3');
+              }}
+              style={{
+                padding: '10px 16px',
+                background: 'transparent',
+                color: 'var(--gray)',
+                border: '1px solid var(--gray-light)',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '14px'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleAddProject}
+              style={{
+                padding: '10px 20px',
+                background: 'var(--primary)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '14px'
+              }}
+            >
+              Create Project
+            </button>
+          </>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
+              Project Name *
+            </label>
+            <input
+              type="text"
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              placeholder="Enter project name"
+              autoFocus
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                border: '1px solid var(--gray-light)',
+                borderRadius: '6px',
+                fontSize: '14px'
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
+              Description
+            </label>
+            <textarea
+              value={newProjectDescription}
+              onChange={(e) => setNewProjectDescription(e.target.value)}
+              placeholder="Enter project description"
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                border: '1px solid var(--gray-light)',
+                borderRadius: '6px',
+                fontSize: '14px',
+                resize: 'vertical'
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
+              Start Date
+            </label>
+            <input
+              type="date"
+              value={newProjectStartDate}
+              onChange={(e) => setNewProjectStartDate(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                border: '1px solid var(--gray-light)',
+                borderRadius: '6px',
+                fontSize: '14px'
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--gray)', marginBottom: '6px' }}>
+              Color
+            </label>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <input
+                type="color"
+                value={newProjectColor}
+                onChange={(e) => setNewProjectColor(e.target.value)}
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              />
+              <span style={{ fontSize: '13px', color: 'var(--gray)' }}>
+                {newProjectColor}
+              </span>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
